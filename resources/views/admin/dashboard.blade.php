@@ -1,212 +1,187 @@
 @extends('layouts.app-admin')
 
 @section('title', 'Dashboard')
-@section('page-title', 'Dashboard')
-@section('page-subtitle', 'Ringkasan aktivitas hari ini')
+@section('page-title', 'Overview')
+@section('page-subtitle', 'Statistik dan ringkasan aktivitas terbaru')
 
 @section('content')
-{{-- Stat Cards (Section 7.8) --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-6">
+<div class="space-y-6">
 
-    {{-- Card 1: Pesanan Hari Ini --}}
-    <div class="bg-white rounded-2xl shadow-card p-5 border-l-4 border-primary animate-fade-in-up">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pesanan Hari Ini</p>
-                <p class="text-3xl font-black text-gray-900 mt-1">142</p>
-                <p class="text-xs font-semibold text-secondary mt-1">▲ 12% dari kemarin</p>
+    @if(session('success'))
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative" role="alert">
+            <span class="block sm:inline font-bold">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    {{-- Subscription Generator Panel --}}
+    <div class="bg-gradient-to-r from-[#E17D19] to-[#E17D19]/80 rounded-3xl p-6 shadow-card border border-orange-100 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h3 class="text-lg font-black font-['Nunito']">Pemicu Pengiriman Langganan Harian</h3>
+            <p class="text-white/90 text-xs font-medium mt-1">Tekan tombol di samping setiap pagi untuk meng-generate pesanan harian bernilai Rp0 dari seluruh pelanggan yang memiliki jadwal kirim hari ini.</p>
+        </div>
+        <form action="{{ route('admin.langganan.generate') }}" method="POST" class="w-full sm:w-auto">
+            @csrf
+            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-white text-[#E17D19] hover:bg-orange-50 font-black rounded-2xl text-sm transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Generate Pengiriman Hari Ini
+            </button>
+        </form>
+    </div>
+
+    {{-- Stats Grid --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        {{-- Card 1 --}}
+        <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 flex flex-col justify-between hover:shadow-card-lg transition-all">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-bold text-gray-400 mb-1">Total Pendapatan</p>
+                    <h3 class="text-2xl font-black text-gray-800">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-secondary-light flex items-center justify-center">
+                    <i data-lucide="wallet" class="w-6 h-6 text-secondary-dark"></i>
+                </div>
             </div>
-            <div class="w-11 h-11 rounded-2xl bg-primary-light flex items-center justify-center">
-                <i data-lucide="shopping-bag" class="w-5 h-5 text-primary"></i>
+            <div class="mt-4 flex items-center gap-2 text-sm">
+                <span class="px-2 py-1 bg-green-50 text-green-600 rounded-lg font-bold flex items-center gap-1">
+                    <i data-lucide="trending-up" class="w-3 h-3"></i> 12%
+                </span>
+                <span class="text-gray-400 font-medium">dari bulan lalu</span>
+            </div>
+        </div>
+
+        {{-- Card 2 --}}
+        <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 flex flex-col justify-between hover:shadow-card-lg transition-all">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-bold text-gray-400 mb-1">Pesanan Selesai</p>
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($pesananSelesai, 0, ',', '.') }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-primary-light flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-primary-dark"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-2 text-sm">
+                <span class="px-2 py-1 bg-green-50 text-green-600 rounded-lg font-bold flex items-center gap-1">
+                    <i data-lucide="check-circle" class="w-3 h-3"></i> Sukses
+                </span>
+            </div>
+        </div>
+
+        {{-- Card 3 --}}
+        <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 flex flex-col justify-between hover:shadow-card-lg transition-all">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-bold text-gray-400 mb-1">Pesanan Aktif</p>
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($pesananBaru, 0, ',', '.') }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center">
+                    <i data-lucide="clock" class="w-6 h-6 text-orange-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-2 text-sm">
+                <span class="px-2 py-1 bg-orange-50 text-orange-600 rounded-lg font-bold flex items-center gap-1">
+                    Proses
+                </span>
+            </div>
+        </div>
+
+        {{-- Card 4 --}}
+        <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 flex flex-col justify-between hover:shadow-card-lg transition-all">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-bold text-gray-400 mb-1">Total Pelanggan</p>
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($totalPelanggan, 0, ',', '.') }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
+                    <i data-lucide="users" class="w-6 h-6 text-blue-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-2 text-sm text-gray-400 font-medium">
+                Customer terdaftar
             </div>
         </div>
     </div>
 
-    {{-- Card 2: Pendapatan --}}
-    <div class="bg-white rounded-2xl shadow-card p-5 border-l-4 border-secondary animate-fade-in-up" style="animation-delay: 80ms">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pendapatan</p>
-                <p class="text-3xl font-black text-gray-900 mt-1">2,4jt</p>
-                <p class="text-xs font-semibold text-secondary mt-1">▲ 8% dari kemarin</p>
+    {{-- Main Content Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {{-- Pesanan Terbaru --}}
+        <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-card border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-black text-gray-800 text-lg">Pesanan Terbaru</h3>
+                <a href="{{ route('admin.pesanan') }}" class="text-primary font-bold text-sm hover:underline">Lihat Semua</a>
             </div>
-            <div class="w-11 h-11 rounded-2xl bg-secondary-light flex items-center justify-center">
-                <i data-lucide="trending-up" class="w-5 h-5 text-secondary-dark"></i>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                            <th class="pb-3 font-bold">Kode Pesanan</th>
+                            <th class="pb-3 font-bold">Pelanggan</th>
+                            <th class="pb-3 font-bold">Total</th>
+                            <th class="pb-3 font-bold">Status</th>
+                            <th class="pb-3 font-bold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        @forelse($pesananTerbaru as $pesanan)
+                        <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                            <td class="py-4 font-bold text-gray-700">#{{ $pesanan->kode_pesanan }}</td>
+                            <td class="py-4 text-gray-600 font-medium">{{ $pesanan->customer->nama_lengkap ?? 'Guest' }}</td>
+                            <td class="py-4 font-bold text-primary">Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</td>
+                            <td class="py-4">
+                                @if($pesanan->id_status_pesanan == 6)
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Selesai</span>
+                                @elseif($pesanan->id_status_pesanan == 7)
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Batal</span>
+                                @else
+                                    <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">Proses</span>
+                                @endif
+                            </td>
+                            <td class="py-4 text-right">
+                                <button class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 inline-flex items-center justify-center transition-colors">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-gray-400 font-medium">Belum ada pesanan terbaru.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
 
-    {{-- Card 3: Pick-up --}}
-    <div class="bg-white rounded-2xl shadow-card p-5 border-l-4 border-accent-blue animate-fade-in-up" style="animation-delay: 160ms">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pick-up</p>
-                <p class="text-3xl font-black text-gray-900 mt-1">89</p>
-                <p class="text-xs font-semibold text-gray-400 mt-1">→ Sama seperti kemarin</p>
-            </div>
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 flex items-center justify-center">
-                <i data-lucide="store" class="w-5 h-5 text-accent-blue"></i>
+        {{-- Menu Terlaris --}}
+        <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100">
+            <h3 class="font-black text-gray-800 text-lg mb-6">Menu Terlaris</h3>
+            <div class="space-y-5">
+                @forelse($menuTerlaris as $menu)
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+                        @if($menu->foto)
+                            <img src="{{ asset('storage/'.$menu->foto) }}" alt="{{ $menu->nama_jus }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-primary-light text-primary font-bold">
+                                {{ substr($menu->nama_jus, 0, 1) }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-bold text-gray-800 truncate">{{ $menu->nama_jus }}</h4>
+                        <p class="text-xs text-gray-400 font-medium truncate">{{ $menu->detail_pesanan_sum_jumlah ?? 0 }} terjual</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-primary">Rp {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+                @empty
+                <div class="py-8 text-center text-gray-400 font-medium text-sm">Belum ada data penjualan.</div>
+                @endforelse
             </div>
         </div>
-    </div>
 
-    {{-- Card 4: Delivery --}}
-    <div class="bg-white rounded-2xl shadow-card p-5 border-l-4 border-accent-purple animate-fade-in-up" style="animation-delay: 240ms">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Delivery</p>
-                <p class="text-3xl font-black text-gray-900 mt-1">53</p>
-                <p class="text-xs font-semibold text-secondary mt-1">▲ 5% dari kemarin</p>
-            </div>
-            <div class="w-11 h-11 rounded-2xl bg-purple-50 flex items-center justify-center">
-                <i data-lucide="truck" class="w-5 h-5 text-accent-purple"></i>
-            </div>
-        </div>
     </div>
 </div>
-
-{{-- Recent Orders Table --}}
-<div class="bg-white rounded-2xl shadow-card overflow-hidden animate-fade-in-up" style="animation-delay: 320ms">
-    <div class="px-4 lg:px-6 py-4 flex items-center justify-between border-b border-gray-100">
-        <h3 class="font-black text-gray-900">Pesanan Terbaru</h3>
-        <span class="text-xs font-bold text-gray-400">Hari ini</span>
-    </div>
-
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="text-left px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">Kode</th>
-                    <th class="text-left px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">Customer</th>
-                    <th class="text-left px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest hidden sm:table-cell">Tipe</th>
-                    <th class="text-left px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">Total</th>
-                    <th class="text-left px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                    <th class="text-right px-4 lg:px-6 py-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                {{-- Row 1 --}}
-                <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-4 lg:px-6 py-4 font-bold text-primary">JK-001</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-accent-blue text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">R</div>
-                            <span class="font-bold text-gray-900">Reyhan</span>
-                        </div>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-gray-500 font-medium hidden sm:table-cell">
-                        <span class="flex items-center gap-1"><i data-lucide="bike" class="w-3 h-3"></i> Delivery</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 font-extrabold text-primary">Rp 53.000</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-accent-blue bg-blue-100 px-2.5 py-1 rounded-full">● Baru</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-right">
-                        <button class="p-2 rounded-xl hover:bg-blue-50 text-accent-blue transition-all">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                </tr>
-
-                {{-- Row 2 --}}
-                <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-4 lg:px-6 py-4 font-bold text-primary">JK-002</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-accent-pink text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">S</div>
-                            <span class="font-bold text-gray-900">Sarah</span>
-                        </div>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-gray-500 font-medium hidden sm:table-cell">
-                        <span class="flex items-center gap-1"><i data-lucide="store" class="w-3 h-3"></i> Pick-up</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 font-extrabold text-primary">Rp 35.000</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full">● Diproses</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-right">
-                        <button class="p-2 rounded-xl hover:bg-blue-50 text-accent-blue transition-all">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                </tr>
-
-                {{-- Row 3 --}}
-                <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-4 lg:px-6 py-4 font-bold text-primary">JK-003</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-secondary text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">A</div>
-                            <span class="font-bold text-gray-900">Ahmad</span>
-                        </div>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-gray-500 font-medium hidden sm:table-cell">
-                        <span class="flex items-center gap-1"><i data-lucide="bike" class="w-3 h-3"></i> Delivery</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 font-extrabold text-primary">Rp 72.000</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-secondary-dark bg-secondary-light px-2.5 py-1 rounded-full">● Selesai</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-right">
-                        <button class="p-2 rounded-xl hover:bg-blue-50 text-accent-blue transition-all">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                </tr>
-
-                {{-- Row 4 --}}
-                <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-4 lg:px-6 py-4 font-bold text-primary">JK-004</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-accent-purple text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">D</div>
-                            <span class="font-bold text-gray-900">Diana</span>
-                        </div>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-gray-500 font-medium hidden sm:table-cell">
-                        <span class="flex items-center gap-1"><i data-lucide="store" class="w-3 h-3"></i> Pick-up</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 font-extrabold text-primary">Rp 18.000</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-accent-red bg-red-100 px-2.5 py-1 rounded-full">● Dibatalkan</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-right">
-                        <button class="p-2 rounded-xl hover:bg-blue-50 text-accent-blue transition-all">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                </tr>
-
-                {{-- Row 5 --}}
-                <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-4 lg:px-6 py-4 font-bold text-primary">JK-005</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-primary text-white text-[10px] font-black flex items-center justify-center flex-shrink-0">B</div>
-                            <span class="font-bold text-gray-900">Budi</span>
-                        </div>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-gray-500 font-medium hidden sm:table-cell">
-                        <span class="flex items-center gap-1"><i data-lucide="bike" class="w-3 h-3"></i> Delivery</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 font-extrabold text-primary">Rp 45.000</td>
-                    <td class="px-4 lg:px-6 py-4">
-                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full">● Diproses</span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 text-right">
-                        <button class="p-2 rounded-xl hover:bg-blue-50 text-accent-blue transition-all">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-@endsection
-
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
-</script>
 @endsection

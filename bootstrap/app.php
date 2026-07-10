@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'isPenjual'  => App\Http\Middleware\IsPenjual::class,
             'isDriver'   => App\Http\Middleware\IsDriver::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/callback'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-class IsAdmin
+class IsDriver
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -16,8 +16,17 @@ class IsAdmin
 
         if (Auth::user()->id_role == 4) {
             return $next($request);
-        } else {
-            return back()->with('error', 'Anda tidak memiliki izin akses ke halaman Admin.');
         }
+
+        // Bukan driver — redirect ke dashboard masing-masing
+        $role = Auth::user()->id_role;
+        $redirect = match ($role) {
+            1 => route('admin.dashboard'),
+            2 => route('beranda'),
+            3 => route('dapur.dashboard'),
+            default => route('beranda'),
+        };
+
+        return redirect($redirect)->with('error', 'Halaman ini khusus untuk driver.');
     }
 }

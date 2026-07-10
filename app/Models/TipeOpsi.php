@@ -11,8 +11,18 @@ class TipeOpsi extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nama_tipe', 'wajib_pilih', 'pilih_banyak'
+        'nama_tipe', 'wajib_pilih', 'pilih_banyak', 'urutan'
     ];
+
+    /**
+     * Default ordering by urutan
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('urutan', function ($builder) {
+            $builder->orderBy('urutan')->orderBy('id_tipe_opsi');
+        });
+    }
 
     public function opsi()
     {

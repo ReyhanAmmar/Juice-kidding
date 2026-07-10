@@ -11,5 +11,5 @@ class KategoriMenu extends Model
     
     public $timestamps = false; 
 
-    protected $fillable = ['nama_kategori', 'is_active'];
+    protected $fillable = ['id_kategori', 'nama_kategori', 'is_active'];
 }

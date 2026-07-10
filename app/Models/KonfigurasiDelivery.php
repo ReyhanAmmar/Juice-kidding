@@ -11,6 +11,6 @@ class KonfigurasiDelivery extends Model
     const CREATED_AT = null;
 
     protected $fillable = [
-        'radius_maks_km', 'tarif_0_3km', 'tarif_3_7km'
+        'radius_maks_km', 'tarif_0_3km', 'tarif_3_7km', 'latitude_toko', 'longitude_toko', 'alamat_toko'
     ];
 }

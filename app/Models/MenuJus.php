@@ -10,7 +10,7 @@ class MenuJus extends Model
     protected $primaryKey = 'id_menu';
 
     protected $fillable = [
-        'nama_jus', 'deskripsi', 'id_kategori', 'harga', 'foto', 'estimasi_kalori', 'rating_rata', 'id_status_stok'
+        'id_menu', 'nama_jus', 'deskripsi', 'id_kategori', 'harga', 'foto', 'estimasi_kalori', 'rating_rata', 'id_status_stok', 'stok'
     ];
 
     public function kategori()
@@ -21,5 +21,10 @@ class MenuJus extends Model
     public function ulasan()
     {
         return $this->hasMany(Ulasan::class, 'id_menu', 'id_menu');
+    }
+
+    public function detail_pesanan()
+    {
+        return $this->hasMany(DetailPesanan::class, 'id_menu', 'id_menu');
     }
 }

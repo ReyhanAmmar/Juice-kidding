@@ -12,7 +12,7 @@ class Pesanan extends Model
     protected $fillable = [
         'kode_pesanan', 'id_customer', 'id_driver', 'id_tipe_pesanan', 'id_slot', 'tanggal_pesan', 
         'id_alamat', 'alamat_snapshot', 'jarak_km', 'subtotal', 'ongkos_kirim', 'total_bayar', 
-        'id_status_pesanan', 'metode_pembayaran', 'id_batch_driver'
+        'id_status_pesanan', 'metode_pembayaran', 'id_batch_driver', 'poin_digunakan'
     ];
 
     public function customer()

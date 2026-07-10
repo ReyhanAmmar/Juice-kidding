@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Admin Panel — Juice Kidding">
-    <title>@yield('title', 'Dashboard') — Admin Juice Kidding</title>
+    <title>@yield('title', 'Dashboard') — Juice Kidding</title>
 
     {{-- Google Fonts: Nunito --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +45,36 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        /* ===== Design Tokens ===== */
+        :root {
+            --color-primary: #E17D19;
+            --color-primary-dark: #C45E0A;
+            --color-primary-light: #FDF3E7;
+            --color-secondary: #96C84B;
+            --color-success: #16A34A;
+            --color-error: #DC2626;
+            --color-warning: #D97706;
+            --color-info: #2563EB;
+            --text-body: #27272a;
+            --text-secondary: #52525b;
+            --text-muted: #71717a;
+            --text-inverse: #ffffff;
+            --surface-elevated: #fafafa;
+            --border-subtle: #e4e4e7;
+            --z-toast: 60;
+            --z-modal: 90;
+            --z-modal-backdrop: 80;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -55,7 +85,7 @@
             from { transform: scale(0.7); opacity: 0; }
             to   { transform: scale(1);   opacity: 1; }
         }
-        .animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
         /* Custom scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
